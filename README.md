@@ -1,4 +1,4 @@
-# Laravel Barcode Generator
+# PHP_Laravel12_Generate_Barcode
 
 A complete Laravel 12 application demonstrating barcode generation and product management using the `milon/barcode` package. This project includes full CRUD functionality, barcode image generation, download support, and a responsive Bootstrap-based user interface.
 

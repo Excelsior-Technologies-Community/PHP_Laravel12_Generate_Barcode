@@ -255,4 +255,5 @@ php artisan optimize:clear
 <img width="1271" height="868" alt="image" src="https://github.com/user-attachments/assets/9d29b604-2dd3-44cf-83f2-23eced118e92" />
 
 <img width="728" height="434" alt="image" src="https://github.com/user-attachments/assets/fb408fc8-5281-40de-ab4c-5c3e8c16dd54" />
-T License.
+
+```

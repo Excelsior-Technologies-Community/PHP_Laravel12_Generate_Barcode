@@ -16,4 +16,31 @@ class Product extends Model
         'description',
         'barcode'
     ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Query Scope : Search
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopeSearch($query, $search)
+    {
+        if (!$search) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($search) {
+
+            $q->where('name', 'like', "%{$search}%")
+                ->orWhere('sku', 'like', "%{$search}%")
+                ->orWhere('barcode', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orWhere('price', 'like', "%{$search}%");
+
+        });
+    }
 }

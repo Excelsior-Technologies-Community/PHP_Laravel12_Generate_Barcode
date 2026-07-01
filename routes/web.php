@@ -7,11 +7,20 @@ Route::get('/', function () {
     return redirect()->route('products.index');
 });
 
-// Product routes
+// Product CRUD
 Route::resource('products', ProductController::class);
 
-// Additional routes for barcode
-Route::get('/product/{id}/barcode-image', [ProductController::class, 'barcodeImage'])->name('product.barcode.image');
+// Barcode Image
+Route::get('/product/{id}/barcode-image', [ProductController::class, 'barcodeImage'])
+    ->name('product.barcode.image');
 
-// Change this route to accept query parameter instead of URL parameter
-Route::get('/generate-barcode', [ProductController::class, 'generateBarcode'])->name('barcode.generate');
+// Download Barcode
+Route::get('/product/{id}/download-barcode', [ProductController::class, 'downloadBarcode'])
+    ->name('product.barcode.download');
+
+// Demo Barcode
+Route::get('/generate-barcode', [ProductController::class, 'generateBarcode'])
+    ->name('barcode.generate');
+
+Route::get('/products-export', [ProductController::class, 'exportCsv'])
+    ->name('products.export');

@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use DNS1D; // Barcode generator class
+use App\Models\BarcodeLog;
 
 class ProductController extends Controller
 {
@@ -63,12 +65,20 @@ class ProductController extends Controller
             'description' => $request->description,
         ];
 
-        // Generate barcode if checkbox is checked
         if ($request->has('generate_barcode')) {
             $productData['barcode'] = $this->generateUniqueBarcode($request->sku);
         }
 
-        Product::create($productData);
+        $product = Product::create($productData);
+
+        // log after product created
+        if ($request->has('generate_barcode')) {
+            BarcodeLog::create([
+                'product_id' => $product->id,
+                'action' => 'generated',
+                'ip_address' => request()->ip(),
+            ]);
+        }
 
         return redirect()->route('products.index')
             ->with('success', 'Product created successfully!');
@@ -77,7 +87,7 @@ class ProductController extends Controller
     // Display specific product
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('logs')->findOrFail($id);
         return view('products.show', compact('product'));
     }
 
@@ -108,8 +118,14 @@ class ProductController extends Controller
         // Regenerate barcode if checkbox is checked
         if ($request->has('regenerate_barcode')) {
             $product->barcode = $this->generateUniqueBarcode($request->sku);
-        }
 
+            BarcodeLog::create([
+                'product_id' => $product->id,
+                'action' => 'regenerated',
+                'ip_address' => request()->ip(),
+            ]);
+        }
+        
         $product->save();
 
         return redirect()->route('products.index')
@@ -150,6 +166,12 @@ class ProductController extends Controller
     public function downloadBarcode($id)
     {
         $product = Product::findOrFail($id);
+
+        BarcodeLog::create([
+            'product_id' => $product->id,
+            'action' => 'downloaded',
+            'ip_address' => request()->ip(),
+        ]);
 
         if (!$product->barcode) {
             return back()->with('error', 'Barcode not found.');
@@ -240,5 +262,4 @@ class ProductController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
-
 }

@@ -50,26 +50,46 @@
                                 </table>
                             </div>
                             <div class="col-md-6">
-                                <h4>Barcode</h4>
-                                @if($product->barcode)
-                                    <div class="text-center">
-                                        <img src="{{ route('product.barcode.image', $product->id) }}" alt="Barcode"
-                                            class="img-fluid border p-3">
-                                        <p class="mt-2"><strong>Code:</strong> {{ $product->barcode }}</p>
-                                        <a href="{{ route('product.barcode.download', $product->id) }}"
-                                            class="btn btn-success">
-                                            Download Barcode
-                                        </a>
+                                <div class="text-center">
 
-                                        <button onclick="window.print()" class="btn btn-dark">
-                                            Print Barcode
-                                        </button>
+                                    <div class="badge bg-primary mb-2 px-3 py-2 fs-6">
+                                        Dual Code System
                                     </div>
-                                @else
+
+                                    {{-- Barcode --}}
+                                    @if($product->barcode)
+                                    <div class="mb-4">
+                                        <h6>Barcode</h6>
+                                        <img src="{{ route('product.barcode.image', $product->id) }}"
+                                            class="img-fluid border p-3"
+                                            style="max-width: 300px;">
+                                    </div>
+                                    @else
                                     <div class="alert alert-warning">
                                         No barcode generated for this product.
                                     </div>
-                                @endif
+                                    @endif
+
+                                    {{-- QR Code --}}
+                                    <div class="mb-3">
+                                        <h6>QR Code</h6>
+                                        {!! QrCode::size(150)->generate($product->sku) !!}
+                                    </div>
+
+                                    <p><strong>SKU:</strong> {{ $product->sku }}</p>
+
+                                    @if($product->barcode)
+                                    <a href="{{ route('product.barcode.download', $product->id) }}"
+                                        class="btn btn-success">
+                                        Download Barcode
+                                    </a>
+
+                                    <button onclick="window.print()" class="btn btn-dark">
+                                        Print Barcode
+                                    </button>
+                                    @endif
+
+                                </div>
                             </div>
                         </div>
 
@@ -103,15 +123,46 @@
                         </form>
 
                         @if(request()->has('code'))
-                            <div class="mt-4 text-center">
-                                <h5>Generated Barcode for: {{ request('code') }}</h5>
-                                <img src="{{ DNS1D::getBarcodePNG(request('code'), 'C128') }}" alt="Barcode"
-                                    class="img-fluid border p-3 mt-2">
-                                <p class="mt-2"><strong>Barcode Type:</strong> CODE 128</p>
-                            </div>
+                        <div class="mt-4 text-center">
+                            <h5>Generated Barcode for: {{ request('code') }}</h5>
+                            <img src="{{ DNS1D::getBarcodePNG(request('code'), 'C128') }}" alt="Barcode"
+                                class="img-fluid border p-3 mt-2">
+                            <p class="mt-2"><strong>Barcode Type:</strong> CODE 128</p>
+                        </div>
                         @endif
                     </div>
                 </div>
+
+                <!-- Barcode Activity Logs -->
+                @if($product->logs && $product->logs->count())
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5>Barcode Activity Logs</h5>
+                    </div>
+
+                    <div class="card-body">
+                        <ul class="list-group">
+
+                            @foreach($product->logs as $log)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <span>
+                                    <span class="badge bg-info text-dark">
+                                        {{ ucfirst($log->action) }}
+                                    </span>
+                                </span>
+
+                                <small class="text-muted">
+                                    {{ $log->ip_address }} | {{ $log->created_at->format('d M Y, h:i A') }}
+                                </small>
+
+                            </li>
+                            @endforeach
+
+                        </ul>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>

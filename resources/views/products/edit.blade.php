@@ -27,7 +27,7 @@
                                 <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
                                     name="name" value="{{ old('name', $product->name) }}" required>
                                 @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
@@ -37,7 +37,7 @@
                                     name="sku" value="{{ old('sku', $product->sku) }}" required>
                                 <small class="text-muted">This will be used to generate the barcode</small>
                                 @error('sku')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
@@ -47,7 +47,7 @@
                                     class="form-control @error('price') is-invalid @enderror" id="price" name="price"
                                     value="{{ old('price', $product->price) }}" required>
                                 @error('price')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
@@ -57,7 +57,7 @@
                                     id="description" name="description"
                                     rows="3">{{ old('description', $product->description) }}</textarea>
                                 @error('description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
@@ -81,25 +81,41 @@
 
                 <!-- Current Barcode -->
                 @if($product->barcode)
-                    <div class="card mt-4">
-                        <div class="card-header">
-                            <h4>Current Barcode</h4>
-                        </div>
-                        <div class="card-body text-center">
-                            <img src="{{ route('product.barcode.image', $product->id) }}" alt="Barcode"
-                                class="img-fluid border p-3" style="max-width: 300px;">
-                            <p class="mt-2"><strong>Current Code:</strong> {{ $product->barcode }}</p>
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h4>Current Barcode</h4>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="{{ route('product.barcode.image', $product->id) }}" alt="Barcode"
+                            class="img-fluid border p-3" style="max-width: 300px;">
+                        <p class="mt-2"><strong>Current Code:</strong> {{ $product->barcode }}</p>
+                    </div>
+
+                    @if($product->barcode)
+                    <div class="card-footer text-center">
+                        <a href="{{ route('product.barcode.download', $product->id) }}" class="btn btn-success">
+                            <i class="fas fa-download"></i> Download Barcode
+                        </a>
+                    </div>
+                    @endif
+                </div>
+                @endif
+
+                <!-- QR Code -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h4>QR Code</h4>
+                    </div>
+                    <div class="card-body text-center">
+
+                        <div class="p-4 border rounded shadow-sm d-inline-block bg-light">
+                            {!! QrCode::size(140)->generate($product->sku) !!}
                         </div>
 
-                        @if($product->barcode)
-                            <div class="card-footer text-center">
-                                <a href="{{ route('product.barcode.download', $product->id) }}" class="btn btn-success">
-                                    <i class="fas fa-download"></i> Download Barcode
-                                </a>
-                            </div>
-                        @endif
+                        <p class="mt-2"><strong>SKU:</strong> {{ $product->sku }}</p>
+
                     </div>
-                @endif
+                </div>
             </div>
         </div>
     </div>

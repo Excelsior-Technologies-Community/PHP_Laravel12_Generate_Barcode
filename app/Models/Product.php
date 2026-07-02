@@ -40,7 +40,11 @@ class Product extends Model
                 ->orWhere('barcode', 'like', "%{$search}%")
                 ->orWhere('description', 'like', "%{$search}%")
                 ->orWhere('price', 'like', "%{$search}%");
-
         });
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(BarcodeLog::class);
     }
 }

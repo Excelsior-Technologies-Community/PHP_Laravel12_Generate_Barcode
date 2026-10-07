@@ -13,19 +13,17 @@ class Product extends Model
         'name',
         'sku',
         'price',
+        'stock',
         'description',
-        'barcode'
+        'barcode',
+        'barcode_type',
+        'qr_data',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'stock' => 'integer',
     ];
-
-    /*
-    |--------------------------------------------------------------------------
-    | Query Scope : Search
-    |--------------------------------------------------------------------------
-    */
 
     public function scopeSearch($query, $search)
     {
@@ -34,7 +32,6 @@ class Product extends Model
         }
 
         return $query->where(function ($q) use ($search) {
-
             $q->where('name', 'like', "%{$search}%")
                 ->orWhere('sku', 'like', "%{$search}%")
                 ->orWhere('barcode', 'like', "%{$search}%")
@@ -46,5 +43,10 @@ class Product extends Model
     public function logs()
     {
         return $this->hasMany(BarcodeLog::class);
+    }
+
+    public function scanLogs()
+    {
+        return $this->hasMany(ScanLog::class);
     }
 }
